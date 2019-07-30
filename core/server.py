@@ -65,7 +65,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def redirect(self):
         url = open('site/redirect.txt','r')
         url = url.readlines()
-        redir = '<META http-equiv="refresh" content="1;URL='+url[0]+'"> '
+        redir = '<script>window.location.href="'+url[0]+'"</script>;'
         file = open('site/redirect.html','w')
         file.write(redir)
         file.close()
