@@ -37,7 +37,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def get_ip(self):
         external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
-        print(external_ip)
         return(external_ip)
 
     def log_message(self, format, *args):
