@@ -1,6 +1,6 @@
 #!/usr/bin/python
 '''
-Name: Pyshing 1.0
+Name: Pyshing 1.1
 Version: Python 3.7.4
 -
 The tool is for educational purposes
@@ -60,7 +60,7 @@ banner = Fore.CYAN+'''
 .JMML.         ,V     M9mmmP' .JMML  JMML..JMML..JMML  JMML. YMMMMMb  
               ,V                                            6'     dP 
            OOb"                                             Ybmmmd'  
-                                             Version: 1.0
+                                             Version: 1.1
                                              Author: R4MSOLO\n
 '''
 options = '''

