@@ -3,7 +3,6 @@ from colorama import Fore, Style
 from io import BytesIO
 import urllib.request
 import logging
-import time
 import re
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
