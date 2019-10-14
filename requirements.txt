@@ -1,3 +1,2 @@
 colorama
 urllib3
-re
