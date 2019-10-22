@@ -5,5 +5,5 @@ Use:
 ```
   pip install -r requirements.txt
 ```
- YouTube: https://youtu.be/lC7wDriS3PQ
+ YouTube: https://www.youtube.com/watch?v=pXZian4hrvM
  ![](img/phishing.png)
