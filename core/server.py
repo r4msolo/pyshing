@@ -54,10 +54,12 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                     self.ips.append(address[1])
                     file = open('ips.txt','a+')
                     file.write('Date: '+str(date)+' IP: '+str(address[1])+'\n')
-        
-        if temp != self.ips[-1]:
-            print(BOLD+RED+'[+]IP Found:',self.ips[-1],ENDC)
-        
+        try:
+            if temp != self.ips[-1]:
+                print(BOLD+RED+'[+]IP Found:',self.ips[-1],ENDC)
+        except IndexError:
+            pass
+            
     def get_time(self):
         timestamp = 1545730073
         timenow = datetime.fromtimestamp(timestamp)
