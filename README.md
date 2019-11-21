@@ -1,11 +1,13 @@
-# pyshing
+# Pyshing
 [Phishing Tool]
 
-Use:
 ```
-  pip install -r requirements.txt
+  $ pip install -r requirements.txt && chmod +x phishing.py
 ```
- YouTube: https://youtu.be/7MHf7I17Pz4
+```
+  $ ./phishing.py
+```
+YouTube: https://youtu.be/7MHf7I17Pz4
  ![](img/phishing.png)
 
 ## License
