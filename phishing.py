@@ -5,8 +5,8 @@ Version: Python 3.7.4
 -
 The tool is for educational purposes
 -
-https://github.com/r4msolo
-Author: R4MSOLO
+https://github.com/igor-m-martins
+Author: Igor M. Martins
 '''
 import core.server
 import urllib.request
@@ -60,7 +60,7 @@ banner = BLUE+'''
               ,V                                            6'     dP 
            OOb"                                             Ybmmmd'  
                                              Version: 1.3
-                                             Author: R4MSOLO\n
+                                             Author: Igor M. Martins\n
 '''+ENDC
 
 options = BOLD+GREEN+'''
