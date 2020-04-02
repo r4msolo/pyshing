@@ -12,4 +12,4 @@ YouTube: https://youtu.be/7MHf7I17Pz4
 
 ## License
 
-MIT © [R4MSOLO](https://r4msolo.github.io)<br/>
+MIT © [Igor M. Martins](https://igor-m-martins.github.io)<br/>
