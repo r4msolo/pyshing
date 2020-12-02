@@ -60,7 +60,7 @@ banner = BLUE+'''
               ,V                                            6'     dP 
            OOb"                                             Ybmmmd'  
                                              Version: 1.3
-                                             Author: r4msolo\n
+                                             Author: Igor M. Martins\n
 '''+ENDC
 
 options = BOLD+GREEN+'''
