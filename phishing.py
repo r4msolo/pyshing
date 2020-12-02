@@ -5,8 +5,8 @@ Version: Python 3.7.4
 -
 The tool is for educational purposes
 -
-https://r4msolo.github.io
-Author: R4MSOLO
+https://immartinspy.github.io
+Author: Igor M. Martins
 '''
 import core.server
 import urllib.request
