@@ -12,4 +12,4 @@ YouTube: https://youtu.be/7MHf7I17Pz4
 
 ## License
 
-MIT © [Igor M. Martins](https://immartinspy.github.io)<br/>
+MIT © [Igor M. Martins](https://imartinspy.github.io)<br/>
