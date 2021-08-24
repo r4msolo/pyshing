@@ -5,7 +5,7 @@ Version: Python 3.7.4
 -
 The tool is for educational purposes
 -
-https://immartinspy.github.io
+https://igor-m-martins.github.io
 Author: Igor M. Martins
 '''
 import core.server
