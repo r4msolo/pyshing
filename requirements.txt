@@ -1,5 +1,4 @@
 urllib3
 wget
-json
 subprocess
 re
