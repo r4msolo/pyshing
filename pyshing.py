@@ -160,12 +160,12 @@ class Pyshing():
               print("ngrok not found, trying download")
               if 'amd64' in proc.decode('utf-8'):
                 wget.download('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip')
-                print('extracting...')
-                proc = subprocess.Popen('unzip ngrok-stable-linux-amd64.zip')
+                print('\nextracting...')
+                os.system('unzip ngrok-stable-linux-amd64.zip')
               if 'aarch' in proc.decode('utf-8') or 'arm' in proc.decode('utf-8'):
                 wget.download('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip')
-                print('extracting...')
-                proc = subprocess.Popen('unzip ngrok-stable-linux-arm.zip')
+                print('\nextracting...')
+                os.system('unzip ngrok-stable-linux-arm.zip')
 
               token = input("\nEnter with your Ngrok API Token here: ")
               os.system('chmod +x ngrok')
