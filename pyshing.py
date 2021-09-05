@@ -162,7 +162,7 @@ class Pyshing():
                 wget('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip')
                 print('extracting...')
                 proc = subprocess.Popen('unzip ngrok-stable-linux-amd64.zip')
-              if 'aarch' in proc or 'arm' in proc:
+              if 'aarch' in proc or 'arm' in proc.decode('utf-8'):
                 wget('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip')
                 print('extracting...')
                 proc = subprocess.Popen('unzip ngrok-stable-linux-arm.zip')
