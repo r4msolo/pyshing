@@ -162,6 +162,10 @@ class Pyshing():
                 wget.download('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip')
                 print('\nextracting...')
                 os.system('unzip ngrok-stable-linux-amd64.zip')
+              if 'aarch64' in proc.decode('utf-8') or 'arm64' in proc.decode('utf-8'):
+                wget.download('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm64.zip')
+                print('\nextracting...')
+                os.system('unzip ngrok-stable-linux-arm64.zip')
               if 'aarch' in proc.decode('utf-8') or 'arm' in proc.decode('utf-8'):
                 wget.download('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip')
                 print('\nextracting...')
