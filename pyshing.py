@@ -116,8 +116,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         for line in readpost:
           for c in forms:
             if c in line and re.search("^"+str(c),line):
-              c = str(c)+'='
-              line = line.split(c)
+              line = line.split('=')
               possibles.append(line[1])
               count +=1
               if count >= 2:
