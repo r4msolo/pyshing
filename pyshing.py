@@ -188,11 +188,6 @@ class Pyshing():
                 wget.download('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm64.zip')
                 print('\nextracting...')
                 os.system('unzip ngrok-stable-linux-arm64.zip')
-              if 'aarch' in proc.decode('utf-8') or 'arm' in proc.decode('utf-8'):
-                wget.download('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip')
-                print('\nextracting...')
-                os.system('unzip ngrok-stable-linux-arm.zip')
-
               token = input("\nEnter with your Ngrok API Token here: ")
               os.system('chmod +x ngrok')
               os.system(f'./ngrok authtoken {token}')
