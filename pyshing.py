@@ -151,9 +151,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 file.write(str(date)+' '+str(possibles)+'\n')
                 count = 0
                 possibles = []
+                self.redirect()
                 break
-        self.redirect()
-
         file.close()
 
     def redirect(self):
