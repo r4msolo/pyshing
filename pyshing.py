@@ -211,7 +211,7 @@ class Pyshing():
     def pageClone(self):
       try:
         url_clone = input('URL Clone: ')
-        os.system(f'wget {url_clone} --mirror -p -P site/ --wait=15 --user-agent="Mozilla/5.0"') #--convert-links
+        os.system(f'wget {url_clone} --mirror -p --convert-links -P site/ --wait=15 --user-agent="Mozilla/5.0"')
         print(BOLD+GREEN+"[+] Website copied... "+ENDC)
         file = open('site/redirect.txt', 'w')
         file.write(url_clone)
