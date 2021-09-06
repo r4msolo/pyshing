@@ -9,6 +9,8 @@
 ```
 YouTube: https://youtu.be/7MHf7I17Pz4
  ![](img/pyshing.png)
+ 
+ WORKS ON TERMUX!
 
 ## License
 
