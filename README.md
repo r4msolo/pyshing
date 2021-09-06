@@ -2,7 +2,7 @@
 [Phishing Tool]
 
 ```
-  $ pip install -r requirements.txt --user && chmod +x phishing.py
+  $ git clone https://github.com/igor-m-martins/pyshing.git && pip install -r requirements.txt --user && chmod +x pyshing.py
 ```
 ```
   $ ./phishing.py
