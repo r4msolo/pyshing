@@ -8,7 +8,7 @@
   $ ./phishing.py
 ```
 YouTube: https://youtu.be/7MHf7I17Pz4
- ![](img/phishing.png)
+ ![](img/pyshing.png)
 
 ## License
 
