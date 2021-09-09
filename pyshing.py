@@ -67,6 +67,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
               httpd.serve_forever()
         except:
           print(RED+'Error with ngrok, try again'+ENDC)
+          os.system('killall ngrok')
+            
     def do_GET(self):
       self.get_ip()
       self.send_response(200)
