@@ -10,7 +10,7 @@ the author is not responsible for misuse of this software!
 
 Website: https://igor-m-martins.github.io
 
-Author: Igor M. Martins
+Author: Igor M. Martins (r4msolo)
 '''
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from datetime import datetime
@@ -245,7 +245,7 @@ banner = BLUE+'''
               ,V                                            6'     dP 
            OOb"                                             Ybmmmd'  
                                              Version: 2.0
-                                             Author: Igor M. Martins\n
+                                             Author: R4MSOLO\n
 '''+ENDC
 
 options = BOLD+GREEN+'''
