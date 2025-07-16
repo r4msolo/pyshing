@@ -7,13 +7,8 @@
 ```
   $ ./phishing.py
 ```
-YouTube: https://youtu.be/uePihFtkmNc
 
  ![](img/pyshing.png)
  
  
  WORKS ON TERMUX!
-
-## License
-
-MIT © [Igor M. Martins](https://igor-m-martins.github.io)<br/>
